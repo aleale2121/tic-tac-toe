@@ -14,17 +14,16 @@ const initialGameBoard = [
 function driveActivePlayer(gameTurns) {
   let currentPlayer = "X";
   if (gameTurns.length > 0 && gameTurns[0].player === "X") {
-    currentPlayer = 0;
+    currentPlayer = "O";
   }
   return currentPlayer;
 }
 
 function App() {
   const [gameTurns, setGameTurns] = useState([]);
-  // const [activePlayer, setActivePlayer] = useState("X");
   const activePlayer = driveActivePlayer(gameTurns);
 
-  let gameBoard = initialGameBoard;
+  let gameBoard = [...initialGameBoard.map((arr) => [...arr])];
   for (const turn of gameTurns) {
     const { square, player } = turn;
     const { row, col } = square;
@@ -44,9 +43,9 @@ function App() {
       winner = firstSquareSymbol;
     }
   }
+  
   const hasDraw = gameTurns.length === 9 && !winner;
   function handleSelectSquare(rowIndex, colIndex) {
-    // setActivePlayer((curActivePlayer) => (curActivePlayer === "X" ? "O" : "X"));
     setGameTurns((prevTurns) => {
       const currentPlayer = driveActivePlayer(prevTurns);
       const updatedTurns = [
@@ -55,6 +54,10 @@ function App() {
       ];
       return updatedTurns;
     });
+  }
+
+  function handleRematch() {
+    setGameTurns([]);
   }
 
   return (
@@ -72,7 +75,9 @@ function App() {
             isActive={activePlayer === "O"}
           />
         </ol>
-        {(winner || hasDraw) && <Gameover winner={winner} />}
+        {(winner || hasDraw) && (
+          <Gameover winner={winner} onRestart={handleRematch} />
+        )}
         <GameBoard onSelectSquare={handleSelectSquare} board={gameBoard} />
       </div>
       <Log turns={gameTurns} />
